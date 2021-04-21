@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from functools import update_wrapper
 from functools import wraps
 
@@ -32,12 +33,10 @@ class calls_record_class(object):
 
 
 
-
+@dataclass
 class Arguments(object):
-
-    def __init__(self, args, kwargs):
-        self.args = args
-        self.kwargs = kwargs
+    args: tuple
+    kwargs: dict
 
 
 def record_calls(passed_func):
