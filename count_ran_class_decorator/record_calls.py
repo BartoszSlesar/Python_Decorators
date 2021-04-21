@@ -1,10 +1,11 @@
 from functools import update_wrapper
+from functools import wraps
 
 import wrapt as wrapt
 
 
 # noinspection PyPep8Naming
-class record_calls(wrapt.ObjectProxy):
+class record_calls_class(wrapt.ObjectProxy):
     """this decorator counts how many time passed_funtion ran"""
 
     def __init__(self, passed_function):
@@ -16,12 +17,8 @@ class record_calls(wrapt.ObjectProxy):
         return self.__wrapped__(*args, **kwargs)
 
 
-
-
-
-
 # noinspection PyPep8Naming
-class calls_record(object):
+class calls_record_class(object):
     """this decorator counts how many time passed_funtion ran"""
 
     def __init__(self, passed_function):
@@ -32,3 +29,26 @@ class calls_record(object):
     def __call__(self, *args, **kwargs):
         self.call_count += 1
         return self.passed_function(*args, **kwargs)
+
+
+
+
+class Arguments(object):
+
+    def __init__(self, args, kwargs):
+        self.args = args
+        self.kwargs = kwargs
+
+
+def record_calls(passed_func):
+    """ Decorator Function, that counts calls number, and preserve passed args and kwargs"""
+
+    @wraps(passed_func)
+    def wrapper_function(*args, **kwargs):
+        wrapper_function.call_count += 1
+        wrapper_function.calls.append(Arguments(args, kwargs))
+        return passed_func(*args, **kwargs)
+
+    wrapper_function.calls = []
+    wrapper_function.call_count = 0
+    return wrapper_function
