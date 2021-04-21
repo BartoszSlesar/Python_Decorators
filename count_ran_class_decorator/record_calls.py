@@ -62,12 +62,3 @@ def record_calls(passed_func):
     wrapper_function.calls = []
     wrapper_function.call_count = 0
     return wrapper_function
-
-
-@record_calls
-def cube(n):
-    return n ** 3
-
-
-cube(3)
-print(cube.calls)
