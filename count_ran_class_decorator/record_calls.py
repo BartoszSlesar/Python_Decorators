@@ -50,13 +50,14 @@ def record_calls(passed_func):
     @wraps(passed_func)
     def wrapper_function(*args, **kwargs):
         wrapper_function.call_count += 1
-        wrapper_function.calls.append(Arguments(args, kwargs))
-        wrapped_function = None
+        arguments = Arguments(args, kwargs)
+        wrapper_function.calls.append(arguments)
         try:
-            wrapped_function = passed_func(*args, **kwargs)
+            arguments.return_value = passed_func(*args, **kwargs)
         except BaseException as e:
             wrapper_function.calls[-1].exception = e
-        return wrapped_function
+            raise
+        return arguments.return_value
 
     wrapper_function.calls = []
     wrapper_function.call_count = 0
