@@ -1,6 +1,11 @@
 # Decorator show how long function ran
+from functools import wraps
+
+
 def timer(passed_function):
     import time
+
+    @wraps(passed_function)
     def wrapper(*args, **kwargs):
         t1 = time.time()
         wrapped_func = passed_function(*args, **kwargs)
