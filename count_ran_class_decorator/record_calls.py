@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from functools import update_wrapper
 from functools import wraps
+from typing import Any, Optional
 
 import wrapt as wrapt
 
@@ -32,11 +33,15 @@ class calls_record_class(object):
         return self.passed_function(*args, **kwargs)
 
 
+NO_RETURN = object()
+
 
 @dataclass
 class Arguments(object):
     args: tuple
     kwargs: dict
+    return_value: Any = NO_RETURN
+    exception: Optional[BaseException] = None
 
 
 def record_calls(passed_func):
@@ -46,8 +51,22 @@ def record_calls(passed_func):
     def wrapper_function(*args, **kwargs):
         wrapper_function.call_count += 1
         wrapper_function.calls.append(Arguments(args, kwargs))
-        return passed_func(*args, **kwargs)
+        wrapped_function = None
+        try:
+            wrapped_function = passed_func(*args, **kwargs)
+        except BaseException as e:
+            wrapper_function.calls[-1].exception = e
+        return wrapped_function
 
     wrapper_function.calls = []
     wrapper_function.call_count = 0
     return wrapper_function
+
+
+@record_calls
+def cube(n):
+    return n ** 3
+
+
+cube(3)
+print(cube.calls)
